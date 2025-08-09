@@ -1,0 +1,32 @@
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+<div class="container py-5">
+    <h2 class="mb-4">Dashboard Overview</h2>
+    <div class="row g-4">
+        <div class="col-md-4"><div class="card text-white bg-primary"><div class="card-body"><h4>Total Sales</h4><p class="display-6">৳ 1,25,000</p></div></div></div>
+        <div class="col-md-4"><div class="card text-white bg-success"><div class="card-body"><h4>Total Orders</h4><p class="display-6">234</p></div></div></div>
+        <div class="col-md-4"><div class="card text-white bg-info"><div class="card-body"><h4>Total Customers</h4><p class="display-6">89</p></div></div></div>
+    </div>
+    <canvas id="revenueChart" height="100" class="mt-5"></canvas>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+var ctx = document.getElementById('revenueChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Monthly Revenue',
+            data: [10000, 15000, 12000, 17000, 20000, 22000],
+            borderColor: 'rgba(75, 192, 192, 1)',
+            tension: 0.4
+        }]
+    }
+});
+</script>
+}

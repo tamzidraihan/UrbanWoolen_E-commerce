@@ -1,0 +1,76 @@
+﻿@model UrbanWoolen.Models.Product
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4>Create New Product</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Price" class="form-label"></label>
+                    <input asp-for="Price" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Upload Image</label>
+                    <input type="file" name="imageFile" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Category" class="form-label"></label>
+                    <select asp-for="Category" class="form-control"
+                            asp-items="Html.GetEnumSelectList<UrbanWoolen.Models.ProductCategory>()">
+                        <option value="">-- Select Category --</option>
+                    </select>
+                    <span asp-validation-for="Category" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Stock" class="form-label"></label>
+                    <input asp-for="Stock" class="form-control" />
+                    <span asp-validation-for="Stock" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <div class="form-check">
+                        <input class="form-check-input" asp-for="IsFeatured" />
+                        <label class="form-check-label" asp-for="IsFeatured">Mark as Featured</label>
+                    </div>
+                </div>
+
+                <div class="form-group form-check">
+                    <input asp-for="IsWinterCollection" class="form-check-input" />
+                    <label class="form-check-label" asp-for="IsWinterCollection">Winter Collection</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Create</button>
+                <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to List</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

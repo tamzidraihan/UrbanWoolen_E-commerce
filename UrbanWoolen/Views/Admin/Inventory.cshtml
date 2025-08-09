@@ -1,0 +1,31 @@
+
+@{
+    ViewData["Title"] = "Inventory";
+}
+<div class="container py-5">
+    <h2>Inventory Management</h2>
+    <table class="table table-bordered mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Denim Jacket</td>
+                <td>Outerwear</td>
+                <td><div class="progress"><div class="progress-bar bg-success" style="width: 80%;">80</div></div></td>
+                <td><span class="badge bg-success">In Stock</span></td>
+            </tr>
+            <tr>
+                <td>Woolen Scarf</td>
+                <td>Accessories</td>
+                <td><div class="progress"><div class="progress-bar bg-warning" style="width: 25%;">25</div></div></td>
+                <td><span class="badge bg-warning">Low Stock</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

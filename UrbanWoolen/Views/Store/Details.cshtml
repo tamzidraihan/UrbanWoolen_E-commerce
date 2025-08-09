@@ -1,0 +1,109 @@
+﻿@model UrbanWoolen.Models.Product
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 text-center">
+            <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded" style="max-height: 450px;" />
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <h1 class="fw-bold">@Model.Name</h1>
+            <h4 class="text-muted mb-3">@Model.Price.ToString("0.00") ৳</h4>
+
+            <span class="badge bg-secondary mb-2">@Model.Category</span>
+
+            <p class="mt-3">@Model.Description</p>
+
+            <p>
+                <strong>Available Stock:</strong>
+                @Model.Stock
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <form method="get" action="/Cart/AddToCart" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-dark btn-lg">
+                        <i class="bi-cart-fill me-1"></i> Add to Cart
+                    </button>
+                </form>
+
+                <form asp-controller="Wishlist" asp-action="Add" method="post" class="d-inline">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger btn-lg">
+                        <i class="bi-heart me-1"></i> Add to Wishlist
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Divider -->
+    <hr class="my-5" />
+
+    <!-- Review Section -->
+    <div class="mt-4">
+        <h4 class="mb-4">Customer Reviews</h4>
+
+        @if (Model.Reviews?.Any() == true)
+        {
+            @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+            {
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <strong class="me-2">Rating:</strong>
+                            <span class="text-warning fs-5">@(new string('★', review.Rating))</span>
+                        </div>
+                        <p>@review.Comment</p>
+                        <small class="text-muted">Posted on @review.CreatedAt.ToString("dd MMM yyyy hh:mm tt")</small>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No reviews yet. Be the first to review this product!</p>
+        }
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <strong>Leave a Review</strong>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Review" asp-action="Add" method="post">
+                        <input type="hidden" name="ProductId" value="@Model.Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <select class="form-select" name="Rating" required>
+                                <option value="">-- Select --</option>
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <option value="@i">@i Star(s)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Comment</label>
+                            <textarea name="Comment" class="form-control" rows="3" maxlength="500" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p class="mt-3"><a asp-controller="Account" asp-action="Login">Login</a> to leave a review.</p>
+        }
+    </div>
+</div>

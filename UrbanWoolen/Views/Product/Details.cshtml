@@ -1,0 +1,26 @@
+﻿@model UrbanWoolen.Models.Product
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="row g-0">
+            <div class="col-md-4 text-center p-4">
+                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded" style="max-height: 300px;" />
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h3 class="card-title">@Model.Name</h3>
+                    <p class="card-text"><strong>Description:</strong> @Model.Description</p>
+                    <p class="card-text"><strong>Category:</strong> @Model.Category</p>
+                    <p class="card-text"><strong>Price:</strong> <span class="text-success fw-bold">@Model.Price.ToString("0.00") ৳</span></p>
+                    <p class="card-text"><strong>Available Stock:</strong> @Model.Stock</p>
+
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-2"><i class="bi bi-pencil"></i> Edit</a>
+                    <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

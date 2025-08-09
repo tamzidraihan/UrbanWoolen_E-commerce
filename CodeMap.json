@@ -1,0 +1,494 @@
+﻿{
+    "RootPath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN",
+    "Controllers":  [
+                        {
+                            "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Controllers\\AdminController.cs",
+                            "Namespace":  "UrbanWoolen.Controllers",
+                            "Class":  "AdminController",
+                            "BaseType":  "Controller",
+                            "ControllerRoute":  "",
+                            "ApiController":  false,
+                            "Authorize":  false,
+                            "Actions":  [
+                                            {
+                                                "Name":  "Index",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  8
+                                            }
+                                        ]
+                        },
+                        {
+                            "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Controllers\\CartController.cs",
+                            "Namespace":  "UrbanWoolen.Controllers",
+                            "Class":  "CartController",
+                            "BaseType":  "Controller",
+                            "ControllerRoute":  "",
+                            "ApiController":  false,
+                            "Authorize":  false,
+                            "Actions":  [
+                                            {
+                                                "Name":  "Index",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  37
+                                            },
+                                            {
+                                                "Name":  "AddToCart",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "int id, string returnUrl = null",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  43
+                                            },
+                                            {
+                                                "Name":  "Remove",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "int id",
+                                                "HttpVerb":  "HTTPPOST",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[HttpPost]"
+                                                               ],
+                                                "Line":  77
+                                            },
+                                            {
+                                                "Name":  "Checkout",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "HTTPGET",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[Authorize]",
+                                                                   "[HttpGet]"
+                                                               ],
+                                                "Line":  92
+                                            },
+                                            {
+                                                "Name":  "Checkout",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "CheckoutViewModel model",
+                                                "HttpVerb":  "HTTPPOST",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[Authorize]",
+                                                                   "[HttpPost]",
+                                                                   "[ValidateAntiForgeryToken]"
+                                                               ],
+                                                "Line":  112
+                                            }
+                                        ]
+                        },
+                        {
+                            "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Controllers\\HomeController.cs",
+                            "Namespace":  "",
+                            "Class":  "HomeController",
+                            "BaseType":  "Controller",
+                            "ControllerRoute":  "",
+                            "ApiController":  false,
+                            "Authorize":  false,
+                            "Actions":  [
+                                            {
+                                                "Name":  "Index",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  15
+                                            },
+                                            {
+                                                "Name":  "Privacy",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  34
+                                            }
+                                        ]
+                        },
+                        {
+                            "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Controllers\\OrderController.cs",
+                            "Namespace":  "UrbanWoolen.Controllers",
+                            "Class":  "OrderController",
+                            "BaseType":  "Controller",
+                            "ControllerRoute":  "",
+                            "ApiController":  false,
+                            "Authorize":  false,
+                            "Actions":  [
+                                            {
+                                                "Name":  "AllOrders",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[Authorize(Roles = \"Admin\")]"
+                                                               ],
+                                                "Line":  25
+                                            },
+                                            {
+                                                "Name":  "UpdateStatus",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "int id, OrderStatus status",
+                                                "HttpVerb":  "HTTPPOST",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[HttpPost]",
+                                                                   "[Authorize(Roles = \"Admin\")]"
+                                                               ],
+                                                "Line":  45
+                                            },
+                                            {
+                                                "Name":  "MyOrders",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[Authorize]"
+                                                               ],
+                                                "Line":  61
+                                            }
+                                        ]
+                        },
+                        {
+                            "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Controllers\\PaymentController.cs",
+                            "Namespace":  "UrbanWoolen.Controllers",
+                            "Class":  "PaymentController",
+                            "BaseType":  "Controller",
+                            "ControllerRoute":  "",
+                            "ApiController":  false,
+                            "Authorize":  false,
+                            "Actions":  [
+                                            {
+                                                "Name":  "Success",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  16
+                                            },
+                                            {
+                                                "Name":  "Fail",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  22
+                                            },
+                                            {
+                                                "Name":  "Cancel",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  28
+                                            },
+                                            {
+                                                "Name":  "IPN",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "HTTPPOST",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[HttpPost]"
+                                                               ],
+                                                "Line":  35
+                                            }
+                                        ]
+                        },
+                        {
+                            "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Controllers\\ProductController.cs",
+                            "Namespace":  "UrbanWoolen.Controllers",
+                            "Class":  "ProductController",
+                            "BaseType":  "Controller",
+                            "ControllerRoute":  "",
+                            "ApiController":  false,
+                            "Authorize":  false,
+                            "Actions":  [
+                                            {
+                                                "Name":  "Index",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  27
+                                            },
+                                            {
+                                                "Name":  "Details",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "int? id",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  33
+                                            },
+                                            {
+                                                "Name":  "Create",
+                                                "ReturnType":  "IActionResult",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  51
+                                            },
+                                            {
+                                                "Name":  "Create",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "Product product, IFormFile imageFile",
+                                                "HttpVerb":  "HTTPPOST",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[HttpPost]",
+                                                                   "[ValidateAntiForgeryToken]"
+                                                               ],
+                                                "Line":  61
+                                            },
+                                            {
+                                                "Name":  "Edit",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "int? id",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  91
+                                            },
+                                            {
+                                                "Name":  "Edit",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "Product product, [FromForm] IFormFile? imageFile",
+                                                "HttpVerb":  "HTTPPOST",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[HttpPost]",
+                                                                   "[ValidateAntiForgeryToken]"
+                                                               ],
+                                                "Line":  111
+                                            },
+                                            {
+                                                "Name":  "Delete",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "int? id",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  158
+                                            },
+                                            {
+                                                "Name":  "DeleteConfirmed",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "int id",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[HttpPost, ActionName(\"Delete\")]",
+                                                                   "[ValidateAntiForgeryToken]"
+                                                               ],
+                                                "Line":  178
+                                            },
+                                            {
+                                                "Name":  "Inventory",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[Authorize(Roles = \"Admin\")]"
+                                                               ],
+                                                "Line":  196
+                                            },
+                                            {
+                                                "Name":  "Dashboard",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[Authorize(Roles = \"Admin\")]"
+                                                               ],
+                                                "Line":  203
+                                            }
+                                        ]
+                        },
+                        {
+                            "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Controllers\\ReviewController.cs",
+                            "Namespace":  "UrbanWoolen.Controllers",
+                            "Class":  "ReviewController",
+                            "BaseType":  "Controller",
+                            "ControllerRoute":  "",
+                            "ApiController":  false,
+                            "Authorize":  false,
+                            "Actions":  [
+                                            {
+                                                "Name":  "Add",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "Review review",
+                                                "HttpVerb":  "HTTPPOST",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[HttpPost]"
+                                                               ],
+                                                "Line":  22
+                                            }
+                                        ]
+                        },
+                        {
+                            "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Controllers\\StoreController.cs",
+                            "Namespace":  "UrbanWoolen.Controllers",
+                            "Class":  "StoreController",
+                            "BaseType":  "Controller",
+                            "ControllerRoute":  "",
+                            "ApiController":  false,
+                            "Authorize":  false,
+                            "Actions":  [
+                                            {
+                                                "Name":  "Index",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "string category, string search, decimal? minPrice, decimal? maxPrice",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  16
+                                            },
+                                            {
+                                                "Name":  "Details",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "int id",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  54
+                                            }
+                                        ]
+                        },
+                        {
+                            "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Controllers\\WishlistController.cs",
+                            "Namespace":  "UrbanWoolen.Controllers",
+                            "Class":  "WishlistController",
+                            "BaseType":  "Controller",
+                            "ControllerRoute":  "",
+                            "ApiController":  false,
+                            "Authorize":  false,
+                            "Actions":  [
+                                            {
+                                                "Name":  "Index",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "",
+                                                "HttpVerb":  "",
+                                                "Route":  "",
+                                                "Attributes":  [
+
+                                                               ],
+                                                "Line":  22
+                                            },
+                                            {
+                                                "Name":  "Add",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "int productId",
+                                                "HttpVerb":  "HTTPPOST",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[HttpPost]"
+                                                               ],
+                                                "Line":  34
+                                            },
+                                            {
+                                                "Name":  "Remove",
+                                                "ReturnType":  "Task\u003cIActionResult\u003e",
+                                                "Parameters":  "int id",
+                                                "HttpVerb":  "HTTPPOST",
+                                                "Route":  "",
+                                                "Attributes":  [
+                                                                   "[HttpPost]"
+                                                               ],
+                                                "Line":  54
+                                            }
+                                        ]
+                        }
+                    ],
+    "Areas":  [
+
+              ],
+    "DbContexts":  [
+
+                   ],
+    "Models":  [
+                   "AdminOrderViewModel",
+                   "CartItem",
+                   "CheckoutViewModel",
+                   "DashboardViewModel",
+                   "EmailOtpVerification",
+                   "ErrorViewModel",
+                   "Order",
+                   "OrderItem",
+                   "Product",
+                   "Review",
+                   "WishlistItem"
+               ],
+    "Services":  {
+                     "Interfaces":  {
+
+                                    },
+                     "Classes":  "SslCommerzService",
+                     "Registrations":  [
+                                           {
+                                               "Lifetime":  "Transient",
+                                               "Interface":  "IEmailSender",
+                                               "Implementation":  "SmtpEmailSender",
+                                               "FilePath":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Program.cs"
+                                           }
+                                       ]
+                 },
+    "Views":  [
+
+              ],
+    "Migrations":  {
+                       "Path":  "D:\\Projects\\UrbanWoolen_FINAL_CLEAN\\UrbanWoolen\\Migrations",
+                       "Count":  15,
+                       "Latest":  "ApplicationDbContextModelSnapshot.cs"
+                   },
+    "GeneratedAt":  "2025-08-08 02:31:45"
+}

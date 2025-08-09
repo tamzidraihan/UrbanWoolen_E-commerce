@@ -1,0 +1,66 @@
+﻿@model IEnumerable<UrbanWoolen.Models.Product>
+@{
+    ViewData["Title"] = "UrbanWoolen - Home";
+}
+
+<!-- Hero Image Slider -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="~/images/slider1.jpg" class="d-block w-100" alt="Slide 1">
+        </div>
+        <div class="carousel-item">
+            <img src="~/images/slider2.jpg" class="d-block w-100" alt="Slide 2">
+        </div>
+        <div class="carousel-item">
+            <img src="~/images/slider3.jpg" class="d-block w-100" alt="Slide 3">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<!-- Featured Product Collections -->
+<div class="container py-5">
+    <h2 class="mb-4">Featured Products</h2>
+
+    <h4 class="text-primary">🔥Hot Collection</h4>
+    <div class="row mb-5">
+        @foreach (var product in ViewBag.HotCollection as List<UrbanWoolen.Models.Product>)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">$@product.Price</p>
+                        <a href="/Store/Details/@product.Id" class="btn btn-outline-dark">View</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <h4 class="text-success">❄ Winter Collection</h4>
+    <div class="row">
+        @foreach (var product in ViewBag.WinterCollection as List<UrbanWoolen.Models.Product>)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">$@product.Price</p>
+                        <a href="/Store/Details/@product.Id" class="btn btn-outline-dark">View</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,61 @@
+﻿@model List<UrbanWoolen.Models.CartItem>
+@{
+    ViewData["Title"] = "Your Cart";
+}
+
+<h2>Your Shopping Cart</h2>
+
+@if (TempData["CartMessage"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["CartMessage"]
+    </div>
+}
+
+@if (Model.Count == 0)
+{
+    <p>Your cart is empty.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Price.ToString("C")</td>
+                    <td>@item.Quantity</td>
+                    <td>@(item.Price * item.Quantity).ToString("C")</td>
+                    <td>
+                        <form asp-action="Remove" asp-route-id="@item.ProductId" method="post">
+                            <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <form asp-controller="Cart" asp-action="Checkout" method="post" onsubmit="this.querySelector('button').disabled = true;">
+            <button type="submit" class="btn btn-success mt-3">Checkout & Pay</button>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-warning mt-3">
+            Please <a asp-controller="Account" asp-action="Login">log in</a> to proceed to checkout.
+        </div>
+    }
+}

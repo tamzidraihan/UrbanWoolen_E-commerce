@@ -1,0 +1,95 @@
+﻿@model List<UrbanWoolen.Models.Product>
+@{
+    ViewData["Title"] = "Shop";
+}
+
+<!-- Hero Banner -->
+<div class="hero-banner mb-4">
+    <img src="~/images/shop-banner.jpg" alt="Shop Banner" class="img-fluid w-100" style="max-height: 400px; object-fit: cover;" />
+</div>
+
+<div class="container-fluid px-lg-5">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm p-3 mb-4">
+                <h5 class="mb-3">Search</h5>
+                <form asp-action="Index" method="get">
+                    <input type="text" name="search" class="form-control mb-3" placeholder="Search..." value="@ViewBag.Search" />
+                    <button type="submit" class="btn btn-outline-dark w-100">Search</button>
+                </form>
+            </div>
+
+            <div class="card shadow-sm p-3 mb-4">
+                <h5 class="mb-3">Category</h5>
+                <div class="list-group">
+                    <a asp-action="Index" class="list-group-item list-group-item-action @(string.IsNullOrEmpty(ViewBag.SelectedCategory) ? "active" : "")">
+                        All
+                    </a>
+                    @foreach (var cat in Enum.GetValues(typeof(UrbanWoolen.Models.ProductCategory)))
+                    {
+                        <a asp-action="Index" asp-route-category="@cat" class="list-group-item list-group-item-action @(ViewBag.SelectedCategory == cat.ToString() ? "active" : "")">
+                            @cat
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm p-3">
+                <h5 class="mb-3">Price Range</h5>
+                <form asp-action="Index" method="get">
+                    <div class="mb-2">
+                        <label>Min Price</label>
+                        <input type="number" name="minPrice" class="form-control" value="@ViewBag.MinPrice" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Max Price</label>
+                        <input type="number" name="maxPrice" class="form-control" value="@ViewBag.MaxPrice" />
+                    </div>
+                    <button type="submit" class="btn btn-outline-dark w-100">Apply</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Product Cards -->
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var product in Model)
+                {
+                    <div class="col" data-aos="fade-up">
+                        <div class="card h-100 shadow-sm border-0 product-card">
+                            <img class="card-img-top product-img" src="@product.ImageUrl" alt="@product.Name" />
+                            <div class="card-body p-4 text-center">
+                                <h5 class="fw-bold text-dark">@product.Name</h5>
+                                <p class="text-muted fw-semibold fs-6">@product.Price.ToString("0.00") ৳</p>
+                            </div>
+                            <div class="card-footer bg-white border-top-0 d-flex justify-content-around pb-3">
+                                <a class="btn btn-outline-primary btn-sm" asp-controller="Store" asp-action="Details" asp-route-id="@product.Id">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                                <form asp-controller="Cart" asp-action="AddToCart" method="get">
+                                    <input type="hidden" name="id" value="@product.Id" />
+                                    <button type="submit" class="btn btn-outline-success btn-sm">
+                                        <i class="bi-cart-plus"></i> Add
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-card:hover {
+        transform: scale(1.02);
+        transition: 0.3s;
+        border: 1px solid #dee2e6;
+    }
+
+    .hero-banner img {
+        border-radius: 6px;
+    }
+</style>

@@ -1,0 +1,297 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    background-color: #f1f3f5 !important;
+    color: #212529;
+    margin-bottom: 60px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+
+.btn-success, .btn-outline-success:hover {
+    color: #fff;
+}
+
+a.btn-outline-success {
+    border-color: #198754;
+    color: #198754;
+}
+
+    a.btn-outline-success:hover {
+        background-color: #198754;
+        color: white;
+    }
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+footer.bg-success {
+    background-color: #198754 !important;
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+}
+.table img {
+    border-radius: 6px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+.card {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease;
+}
+
+    .card:hover {
+        transform: scale(1.02);
+    }
+
+.text-success {
+    color: #198754 !important;
+}
+
+/* Global font and body setup */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+/* Google font import */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Category cards */
+.category-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+}
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+/* Fixed image styling for categories */
+.category-img {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Category title styling */
+.category-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    color: #198754; /* Deep Green */
+    text-decoration: none;
+}
+
+    .category-title:hover {
+        color: #145c32;
+    }
+
+/* Section headings */
+section h2 {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #333;
+    position: relative;
+    display: inline-block;
+}
+
+    section h2::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 4px;
+        background-color: #198754;
+        margin: 8px auto 0;
+        border-radius: 2px;
+    }
+
+/* Newsletter styling */
+.newsletter-signup input[type="email"] {
+    height: 48px;
+    border-radius: 6px;
+    padding: 0 1rem;
+}
+
+.newsletter-signup button {
+    height: 48px;
+    border-radius: 6px;
+}
+
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    }
+
+.product-img {
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.05);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-success:hover {
+    color: #fff;
+}
+
+.card-body {
+    flex-grow: 1;
+}
+
+.card-header, .card-footer {
+    padding: 1rem 1.25rem;
+}
+
+    .card-footer .btn {
+        min-width: 100px;
+    }
+
+
+/* Navbar Customizations */
+.bg-brand {
+    background-color: #198754 !important;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+}
+
+.navbar-dark .nav-link {
+    color: white !important;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.2s ease-in-out;
+}
+
+    /* Hover underline animation */
+    .navbar-dark .nav-link.nav-link-underline::after {
+        content: "";
+        position: absolute;
+        width: 0%;
+        height: 2px;
+        left: 0;
+        bottom: 0;
+        background-color: #ffc107;
+        transition: width 0.3s ease;
+    }
+
+    .navbar-dark .nav-link.nav-link-underline:hover::after {
+        width: 100%;
+    }
+
+/* Navbar cart badge */
+.navbar .badge {
+    font-size: 0.7rem;
+    padding: 0.3em 0.5em;
+}
+
+.btn-lg {
+    min-width: 180px;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.product-img:hover {
+    transform: scale(1.05);
+    transition: 0.3s;
+}
+
+.carousel-caption h5 {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.carousel-caption p {
+    font-size: 1rem;
+}
+
+.featured-slider .card {
+    transition: transform 0.3s ease;
+}
+
+    .featured-slider .card:hover {
+        transform: scale(1.02);
+    }
+
+.hero-slider .slide {
+    position: relative;
+    height: 400px;
+    color: #fff;
+}
+
+    .hero-slider .slide img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        filter: brightness(0.6);
+    }
+
+    .hero-slider .slide .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-slider .slide h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+    }
+
+    .hero-slider .slide p {
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+    }

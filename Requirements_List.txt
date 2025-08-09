@@ -1,0 +1,4 @@
+1. Email verification 
+2. Country boy look a like
+3. inventory would be better
+4. Payment Gateway integration

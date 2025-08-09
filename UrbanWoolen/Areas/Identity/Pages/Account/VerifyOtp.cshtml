@@ -1,0 +1,25 @@
+﻿@page
+@model UrbanWoolen.Areas.Identity.Pages.Account.VerifyOtpModel
+@{
+    ViewData["Title"] = "Verify OTP";
+}
+
+<h2 class="mb-4">Verify Your Email</h2>
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="OtpCode"></label>
+        <input asp-for="OtpCode" class="form-control" placeholder="Enter 6-digit OTP" />
+        <span asp-validation-for="OtpCode" class="text-danger"></span>
+    </div>
+
+    @* <input type="hidden" asp-for="Email" /> *@
+
+    <button type="submit" class="btn btn-success mt-3">Verify OTP</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
