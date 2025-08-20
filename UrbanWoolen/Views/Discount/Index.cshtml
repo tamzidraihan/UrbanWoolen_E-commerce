@@ -1,0 +1,55 @@
+﻿@model IEnumerable<UrbanWoolen.Models.Discount>
+@{
+    ViewData["Title"] = "Discounts";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Discounts</h2>
+    <a asp-action="Create" class="btn btn-success"><i class="bi bi-plus"></i> New Discount</a>
+</div>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Period</th>
+            <th>Status</th>
+            <th style="width:150px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.Product?.Name</td>
+                <td>@d.Type</td>
+                <td>
+                    @(d.Type == UrbanWoolen.Models.DiscountType.Percentage ? $"{d.Value:0}%"
+                        : $"৳{d.Value:0.00}")
+                </td>
+                <td>
+                    @d.StartsAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                    @if (d.EndsAt != null)
+                    {
+                        @: – @d.EndsAt.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                    }
+                </td>
+                <td>
+                    @if (d.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </td>
+                <td class="text-end">
+                    <a asp-action="Edit" asp-route-id="@d.Id" class="btn btn-sm btn-primary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@d.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

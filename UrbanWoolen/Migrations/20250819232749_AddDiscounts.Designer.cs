@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UrbanWoolen.Data;
 
@@ -11,9 +12,11 @@ using UrbanWoolen.Data;
 namespace UrbanWoolen.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819232749_AddDiscounts")]
+    partial class AddDiscounts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,40 +284,6 @@ namespace UrbanWoolen.Migrations
                     b.ToTable("EmailOtpVerifications");
                 });
 
-            modelBuilder.Entity("UrbanWoolen.Models.InventoryTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Change")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PerformedByUserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Reason")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reference")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("InventoryTransactions");
-                });
-
             modelBuilder.Entity("UrbanWoolen.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -380,9 +349,6 @@ namespace UrbanWoolen.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("CostPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -396,25 +362,12 @@ namespace UrbanWoolen.Migrations
                     b.Property<bool>("IsWinterCollection")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastRestockedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ReorderPoint")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Reserved")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Sku")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");
@@ -701,17 +654,6 @@ namespace UrbanWoolen.Migrations
                 });
 
             modelBuilder.Entity("UrbanWoolen.Models.Discount", b =>
-                {
-                    b.HasOne("UrbanWoolen.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("UrbanWoolen.Models.InventoryTransaction", b =>
                 {
                     b.HasOne("UrbanWoolen.Models.Product", "Product")
                         .WithMany()

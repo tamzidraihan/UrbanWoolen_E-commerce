@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UrbanWoolen.Data;
 
@@ -11,9 +12,11 @@ using UrbanWoolen.Data;
 namespace UrbanWoolen.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819181056_AddSizeCharts")]
+    partial class AddSizeCharts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -224,36 +227,6 @@ namespace UrbanWoolen.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("UrbanWoolen.Models.Discount", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("EndsAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartsAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Discounts");
-                });
-
             modelBuilder.Entity("UrbanWoolen.Models.EmailOtpVerification", b =>
                 {
                     b.Property<int>("Id")
@@ -279,40 +252,6 @@ namespace UrbanWoolen.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EmailOtpVerifications");
-                });
-
-            modelBuilder.Entity("UrbanWoolen.Models.InventoryTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Change")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PerformedByUserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Reason")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reference")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("InventoryTransactions");
                 });
 
             modelBuilder.Entity("UrbanWoolen.Models.Order", b =>
@@ -380,9 +319,6 @@ namespace UrbanWoolen.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("CostPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -396,25 +332,12 @@ namespace UrbanWoolen.Migrations
                     b.Property<bool>("IsWinterCollection")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastRestockedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ReorderPoint")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Reserved")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Sku")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");
@@ -469,18 +392,10 @@ namespace UrbanWoolen.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("int");
 
-                    b.Property<int>("ChartType")
-                        .HasColumnType("int");
-
                     b.Property<string>("Region")
                         .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("Unit")
                         .IsRequired()
@@ -496,18 +411,14 @@ namespace UrbanWoolen.Migrations
                         {
                             Id = 1,
                             Category = 0,
-                            ChartType = 1,
                             Region = "BD",
-                            Title = "Men Tops (BD)",
                             Unit = "cm"
                         },
                         new
                         {
                             Id = 2,
                             Category = 1,
-                            ChartType = 1,
                             Region = "BD",
-                            Title = "Women Tops (BD)",
                             Unit = "cm"
                         });
                 });
@@ -520,19 +431,10 @@ namespace UrbanWoolen.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal?>("Chest")
+                    b.Property<decimal>("Chest")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal?>("FootLength")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("Hip")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("Inseam")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("Length")
+                    b.Property<decimal>("Length")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Size")
@@ -543,7 +445,7 @@ namespace UrbanWoolen.Migrations
                     b.Property<int>("SizeChartId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Waist")
+                    b.Property<decimal>("Waist")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -698,28 +600,6 @@ namespace UrbanWoolen.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("UrbanWoolen.Models.Discount", b =>
-                {
-                    b.HasOne("UrbanWoolen.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("UrbanWoolen.Models.InventoryTransaction", b =>
-                {
-                    b.HasOne("UrbanWoolen.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("UrbanWoolen.Models.OrderItem", b =>

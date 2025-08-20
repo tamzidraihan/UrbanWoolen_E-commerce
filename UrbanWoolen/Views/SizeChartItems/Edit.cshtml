@@ -1,0 +1,72 @@
+﻿@model UrbanWoolen.Models.SizeChartItem
+@{
+    ViewData["Title"] = "Edit Size Row";
+}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white"><h5>Edit Row</h5></div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="SizeChartId" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Size" class="form-label"></label>
+                        <input asp-for="Size" class="form-control" />
+                        <span asp-validation-for="Size" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Chest" class="form-label"></label>
+                        <input asp-for="Chest" class="form-control" type="number" step="any" inputmode="decimal" />
+                        <span asp-validation-for="Chest" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Waist" class="form-label"></label>
+                        <input asp-for="Waist" class="form-control" type="number" step="any" inputmode="decimal" />
+                        <span asp-validation-for="Waist" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Length" class="form-label"></label>
+                        <input asp-for="Length" class="form-control" type="number" step="any" inputmode="decimal" />
+                        <span asp-validation-for="Length" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Hip" class="form-label"></label>
+                        <input asp-for="Hip" class="form-control" type="number" step="any" inputmode="decimal" />
+                        <span asp-validation-for="Hip" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Inseam" class="form-label"></label>
+                        <input asp-for="Inseam" class="form-control" type="number" step="any" inputmode="decimal" />
+                        <span asp-validation-for="Inseam" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="FootLength" class="form-label"></label>
+                        <input asp-for="FootLength" class="form-control" type="number" step="any" inputmode="decimal" />
+                        <span asp-validation-for="FootLength" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Save</button>
+                <a asp-controller="SizeCharts" asp-action="Details" asp-route-id="@Model.SizeChartId" class="btn btn-secondary">Back</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

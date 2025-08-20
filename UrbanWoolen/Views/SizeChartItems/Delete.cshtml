@@ -1,0 +1,16 @@
+﻿@model UrbanWoolen.Models.SizeChartItem
+@{
+    ViewData["Title"] = "Delete Size Row";
+}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h5>Delete row <strong>@Model.Size</strong>?</h5>
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a asp-controller="SizeCharts" asp-action="Details" asp-route-id="@Model.SizeChartId" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>

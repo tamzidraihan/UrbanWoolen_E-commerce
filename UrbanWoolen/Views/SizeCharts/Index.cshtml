@@ -1,0 +1,47 @@
+﻿@model IEnumerable<UrbanWoolen.Models.SizeChart>
+@{
+    ViewData["Title"] = "Size Charts";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Size Charts</h3>
+        <a asp-action="Create" class="btn btn-success"><i class="bi bi-plus-circle"></i> New Chart</a>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Region</th>
+                        <th>Unit</th>
+                        <th>Type</th>
+                        <th>Rows</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td>@c.Title</td>
+                            <td>@c.Category</td>
+                            <td>@c.Region</td>
+                            <td>@c.Unit</td>
+                            <td>@c.ChartType</td>
+                            <td>@(c.Items?.Count ?? 0)</td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                                <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@c.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

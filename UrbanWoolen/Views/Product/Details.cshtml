@@ -1,4 +1,5 @@
-﻿@model UrbanWoolen.Models.Product
+﻿@model UrbanWoolen.Models.ViewModels.ProductDetailsViewModel
+@using UrbanWoolen.Models
 @{
     ViewData["Title"] = "Product Details";
 }
@@ -7,20 +8,161 @@
     <div class="card shadow-lg">
         <div class="row g-0">
             <div class="col-md-4 text-center p-4">
-                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded" style="max-height: 300px;" />
+                <img src="@Model.Product.ImageUrl" alt="@Model.Product.Name" class="img-fluid rounded" style="max-height: 300px;" />
             </div>
             <div class="col-md-8">
                 <div class="card-body">
-                    <h3 class="card-title">@Model.Name</h3>
-                    <p class="card-text"><strong>Description:</strong> @Model.Description</p>
-                    <p class="card-text"><strong>Category:</strong> @Model.Category</p>
-                    <p class="card-text"><strong>Price:</strong> <span class="text-success fw-bold">@Model.Price.ToString("0.00") ৳</span></p>
-                    <p class="card-text"><strong>Available Stock:</strong> @Model.Stock</p>
+                    <h3 class="card-title">@Model.Product.Name</h3>
+                    <p class="card-text"><strong>Description:</strong> @Model.Product.Description</p>
+                    <p class="card-text"><strong>Category:</strong> @Model.Product.Category</p>
+                    <p class="card-text">
+                        <strong>Price:</strong>
+                        <span class="text-success fw-bold">@Model.Product.Price.ToString("0.00") ৳</span>
+                    </p>
+                    <p class="card-text"><strong>Available Stock:</strong> @Model.Product.Stock</p>
 
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-2"><i class="bi bi-pencil"></i> Edit</a>
+                    @if (Model.SizeChart != null)
+                    {
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="unitToggle" onchange="toggleUnits()">
+                                <label class="form-check-label" for="unitToggle">in</label>
+                                <span class="ms-1 small text-muted">(cm ↔ in)</span>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary me-2" data-bs-toggle="modal" data-bs-target="#sizeGuideModal">
+                                <i class="bi bi-rulers"></i> Size Guide
+                            </button>
+                        </div>
+                    }
+
+                    <a asp-action="Edit" asp-route-id="@Model.Product.Id" class="btn btn-primary me-2"><i class="bi bi-pencil"></i> Edit</a>
                     <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to List</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@if (Model.SizeChart != null)
+{
+    <div class="modal fade" id="sizeGuideModal" tabindex="-1" aria-labelledby="sizeGuideLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sizeGuideLabel">
+                        Size Guide — @Model.Product.Category (@Model.SizeChart.Region, <span id="unitLabel">cm</span>)
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle" id="sizeGuideTable" data-unit="cm">
+                            <thead>
+                                <tr>
+                                    <th>Size</th>
+                                    @switch (Model.SizeChart.ChartType)
+                                    {
+                                        case ChartType.Pants:
+                                            <text>
+                                            <th>Waist</th>
+                                            <th>Hip</th>
+                                            <th>Inseam</th>
+                                            <th>Length</th>
+                                            </text>
+                                            break;
+                                        case ChartType.Shoes:
+                                            <text>
+                                            <th>Foot Length</th></text>
+                                            break;
+                                        default:
+                                            <text>
+                                            <th>Chest</th>
+                                            <th>Waist</th>
+                                            <th>Length</th>
+                                            </text>
+                                            break;
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in Model.SizeChart.Items.OrderBy(i => i.Id))
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@row.Size</td>
+                                        @switch (Model.SizeChart.ChartType)
+                                        {
+                                            case ChartType.Pants:
+                                                <text>
+                                                <td class="m-waist">@row.Waist</td>
+                                                <td class="m-hip">@row.Hip</td>
+                                                <td class="m-inseam">@row.Inseam</td>
+                                                <td class="m-length">@row.Length</td>
+                                                </text>
+                                                break;
+                                            case ChartType.Shoes:
+                                                <text>
+                                                <td class="m-foot">@row.FootLength</td>
+                                                </text>
+                                                break;
+                                            default:
+                                                <text>
+                                                <td class="m-chest">@row.Chest</td>
+                                                <td class="m-waist">@row.Waist</td>
+                                                <td class="m-length">@row.Length</td>
+                                                </text>
+                                                break;
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <small class="text-muted">Tip: Measurements are approximate.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function toggleUnits() {
+            const isIn = document.getElementById('unitToggle').checked;
+            const table = document.getElementById('sizeGuideTable');
+            const currentUnit = table.getAttribute('data-unit');
+            const targetUnit = isIn ? 'in' : 'cm';
+            if (currentUnit === targetUnit) return;
+
+            const toIn = (cm) => (cm == null || cm === '' ? '' : (parseFloat(cm) / 2.54).toFixed(1));
+            const toCm = (inch) => (inch == null || inch === '' ? '' : (parseFloat(inch) * 2.54).toFixed(0));
+
+            const convertCells = (cls, convertFn) => {
+                document.querySelectorAll('#sizeGuideTable .' + cls).forEach(td => {
+                    const val = td.textContent.trim();
+                    td.textContent = convertFn(val);
+                });
+            };
+
+            if (targetUnit === 'in') {
+                convertCells('m-chest', toIn);
+                convertCells('m-waist', toIn);
+                convertCells('m-length', toIn);
+                convertCells('m-hip', toIn);
+                convertCells('m-inseam', toIn);
+                convertCells('m-foot', toIn);
+            } else {
+                convertCells('m-chest', toCm);
+                convertCells('m-waist', toCm);
+                convertCells('m-length', toCm);
+                convertCells('m-hip', toCm);
+                convertCells('m-inseam', toCm);
+                convertCells('m-foot', toCm);
+            }
+            table.setAttribute('data-unit', targetUnit);
+            document.getElementById('unitLabel').textContent = targetUnit;
+        }
+    </script>
+}

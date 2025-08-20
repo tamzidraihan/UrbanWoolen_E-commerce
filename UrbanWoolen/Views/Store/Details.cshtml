@@ -1,6 +1,12 @@
 ﻿@model UrbanWoolen.Models.Product
 @{
     ViewData["Title"] = Model.Name;
+
+    // Pull data passed via ViewBag (controller keeps @model as Product)
+    var availableRegions = ViewBag.AvailableRegions as List<string> ?? new List<string>();
+    string selectedRegion = ViewBag.SelectedRegion as string ?? "BD";
+    string selectedUnit = ViewBag.SelectedUnit as string ?? "cm";
+    var sizeChart = ViewBag.SizeChart as UrbanWoolen.Models.SizeChart; // may be null
 }
 
 <div class="container py-5">
@@ -23,6 +29,37 @@
                 <strong>Available Stock:</strong>
                 @Model.Stock
             </p>
+
+            @* ---- ADDED: Region selector + Unit toggle + Size Guide button ---- *@
+            @if ((availableRegions?.Any() ?? false))
+            {
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <div class="input-group input-group-sm" style="width:auto;">
+                        <label class="input-group-text">Region</label>
+                        <select id="regionSelect" class="form-select" onchange="onRegionChange()">
+                            @foreach (var r in availableRegions)
+                            {
+                                <option value="@r" selected="@(r == selectedRegion ? "selected" : null)">@r</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-check form-switch ms-2">
+                        <input class="form-check-input" type="checkbox" id="unitToggle" @(selectedUnit == "in" ? "checked" : "") onchange="toggleUnits()">
+                        <label class="form-check-label" for="unitToggle">in</label>
+                        <span class="ms-1 small text-muted">(cm ↔ in)</span>
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-outline-secondary ms-auto"
+                            data-bs-toggle="modal"
+                            data-bs-target="#sizeGuideModal"
+                    @(sizeChart == null ? "disabled" : null)>
+                        <i class="bi bi-rulers"></i> Size Guide
+                    </button>
+                </div>
+            }
+            @* ---- END ADDED controls ---- *@
 
             <div class="d-flex flex-wrap gap-2 mt-4">
                 <form method="get" action="/Cart/AddToCart" class="d-inline">
@@ -107,3 +144,155 @@
         }
     </div>
 </div>
+
+@* ---- ADDED: Size Guide Modal (only rendered if a chart is available) ---- *@
+@if (sizeChart != null)
+{
+    <div class="modal fade" id="sizeGuideModal" tabindex="-1" aria-labelledby="sizeGuideLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sizeGuideLabel">
+                        Size Guide — @Model.Category (@selectedRegion, <span id="unitLabel">@selectedUnit</span>)
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle" id="sizeGuideTable" data-unit="@selectedUnit">
+                            <thead>
+                                <tr>
+                                    <th>Size</th>
+                                    @{
+                                        switch (sizeChart.ChartType)
+                                        {
+                                            case UrbanWoolen.Models.ChartType.Pants:
+                                                @:
+                                                <th>Waist</th>
+                                                @:
+                                                <th>Hip</th>
+                                                @:
+                                                <th>Inseam</th>
+                                                @:
+                                                <th>Length</th>
+                                                break;
+                                            case UrbanWoolen.Models.ChartType.Shoes:
+                                                @:
+                                                <th>Foot Length</th>
+                                                break;
+                                            default:
+                                                @:
+                                                <th>Chest</th>
+                                                @:
+                                                <th>Waist</th>
+                                                @:
+                                                <th>Length</th>
+                                                break;
+                                        }
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in sizeChart.Items.OrderBy(i => i.Id))
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@row.Size</td>
+                                        @{
+                                            switch (sizeChart.ChartType)
+                                            {
+                                                case UrbanWoolen.Models.ChartType.Pants:
+                                                    @:
+                                                    <td class="m-waist">@row.Waist</td>
+                                                    @:
+                                                    <td class="m-hip">@row.Hip</td>
+                                                    @:
+                                                    <td class="m-inseam">@row.Inseam</td>
+                                                    @:
+                                                    <td class="m-length">@row.Length</td>
+                                                    break;
+                                                case UrbanWoolen.Models.ChartType.Shoes:
+                                                    @:
+                                                    <td class="m-foot">@row.FootLength</td>
+                                                    break;
+                                                default:
+                                                    @:
+                                                    <td class="m-chest">@row.Chest</td>
+                                                    @:
+                                                    <td class="m-waist">@row.Waist</td>
+                                                    @:
+                                                    <td class="m-length">@row.Length</td>
+                                                    break;
+                                            }
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <small class="text-muted">Tip: Measurements are approximate and may vary by style.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@* ---- END ADDED modal ---- *@
+
+@section Scripts {
+    <script>
+        // region change reloads with selected region, preserves unit
+        function onRegionChange() {
+            const region = document.getElementById('regionSelect').value;
+            const unit = document.getElementById('unitToggle')?.checked ? 'in' : 'cm';
+            const url = new URL(window.location.href);
+            url.searchParams.set('region', region);
+            url.searchParams.set('unit', unit);
+            window.location.href = url.toString();
+        }
+
+        // cm <-> in conversion in-place (no reload)
+        function toggleUnits() {
+            const toggle = document.getElementById('unitToggle');
+            if (!toggle) return;
+
+            const isIn = toggle.checked;
+            const table = document.getElementById('sizeGuideTable');
+            if (!table) return;
+
+            const currentUnit = table.getAttribute('data-unit');
+            const targetUnit = isIn ? 'in' : 'cm';
+            if (currentUnit === targetUnit) return;
+
+            const toIn = (cm) => (cm == null || cm === '' ? '' : (parseFloat(cm) / 2.54).toFixed(1));
+            const toCm = (inch) => (inch == null || inch === '' ? '' : (parseFloat(inch) * 2.54).toFixed(0));
+
+            const convertCells = (cls, convertFn) => {
+                document.querySelectorAll('#sizeGuideTable .' + cls).forEach(td => {
+                    const val = td.textContent.trim();
+                    td.textContent = convertFn(val);
+                });
+            };
+
+            if (targetUnit === 'in') {
+                convertCells('m-chest', toIn);
+                convertCells('m-waist', toIn);
+                convertCells('m-length', toIn);
+                convertCells('m-hip', toIn);
+                convertCells('m-inseam', toIn);
+                convertCells('m-foot', toIn);
+            } else {
+                convertCells('m-chest', toCm);
+                convertCells('m-waist', toCm);
+                convertCells('m-length', toCm);
+                convertCells('m-hip', toCm);
+                convertCells('m-inseam', toCm);
+                convertCells('m-foot', toCm);
+            }
+            table.setAttribute('data-unit', targetUnit);
+            const label = document.getElementById('unitLabel');
+            if (label) label.textContent = targetUnit;
+        }
+    </script>
+}

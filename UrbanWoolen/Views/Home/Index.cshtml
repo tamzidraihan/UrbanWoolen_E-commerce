@@ -1,4 +1,4 @@
-﻿@model IEnumerable<UrbanWoolen.Models.Product>
+﻿@model UrbanWoolen.Models.ViewModels.HomeViewModel
 @{
     ViewData["Title"] = "UrbanWoolen - Home";
 }
@@ -39,7 +39,7 @@
                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">$@product.Price</p>
+                        <p class="card-text">@product.Price.ToString("0.00") ৳</p>
                         <a href="/Store/Details/@product.Id" class="btn btn-outline-dark">View</a>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
     </div>
 
     <h4 class="text-success">❄ Winter Collection</h4>
-    <div class="row">
+    <div class="row mb-5">
         @foreach (var product in ViewBag.WinterCollection as List<UrbanWoolen.Models.Product>)
         {
             <div class="col-md-3 mb-4">
@@ -56,11 +56,86 @@
                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">$@product.Price</p>
+                        <p class="card-text">@product.Price.ToString("0.00") ৳</p>
                         <a href="/Store/Details/@product.Id" class="btn btn-outline-dark">View</a>
                     </div>
                 </div>
             </div>
         }
     </div>
+
+    <!-- NEW: New Arrivals -->
+    @if (Model.NewArrivals.Any())
+    {
+        <h4 class="mb-3">🆕 New Arrivals</h4>
+        <div class="row mb-5">
+            @foreach (var p in Model.NewArrivals)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="@p.ImageUrl" class="card-img-top" alt="@p.Name" style="object-fit:cover;height:200px;">
+                            <span class="badge bg-info text-dark position-absolute top-0 start-0 m-2">New</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title mb-1">@p.Name</h6>
+                            <small class="text-muted">@p.Category</small>
+                            <div class="mt-2">
+                                <span class="fw-bold">৳@p.Price.ToString("0.00")</span>
+                            </div>
+                            <div class="mt-auto d-flex gap-2">
+                                <a asp-controller="Store" asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-dark w-100">View</a>
+                                <form method="get" action="/Cart/AddToCart" class="w-100">
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-dark w-100">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Discounts -->
+    @if (Model.ActiveDiscounts.Any())
+    {
+        <h4 class="mb-3">💸 Discounts</h4>
+        <div class="row">
+            @foreach (var item in Model.ActiveDiscounts)
+            {
+                var p = item.Product;
+                var d = item.Discount;
+                var finalPrice = d.Type == UrbanWoolen.Models.DiscountType.Percentage
+                ? Math.Round(p.Price * (1 - (d.Value / 100m)), 2)
+                : Math.Max(0, Math.Round(p.Price - d.Value, 2));
+
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="@p.ImageUrl" class="card-img-top" alt="@p.Name" style="object-fit:cover;height:200px;">
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">
+                                @(d.Type == UrbanWoolen.Models.DiscountType.Percentage ? $"{d.Value:0}% OFF" : $"৳{d.Value:0} OFF")
+                            </span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title mb-1">@p.Name</h6>
+                            <small class="text-muted">@p.Category</small>
+                            <div class="mt-2">
+                                <span class="text-success fw-bold">৳@finalPrice.ToString("0.00")</span>
+                                <span class="text-muted text-decoration-line-through ms-2">৳@p.Price.ToString("0.00")</span>
+                            </div>
+                            <div class="mt-auto d-flex gap-2">
+                                <a asp-controller="Store" asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-dark w-100">View</a>
+                                <form method="get" action="/Cart/AddToCart" class="w-100">
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-dark w-100">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>

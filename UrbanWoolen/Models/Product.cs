@@ -42,5 +42,20 @@ namespace UrbanWoolen.Models
         public bool IsFeatured { get; set; } = false;
         public bool IsWinterCollection { get; set; } = false;
 
+        // Inventory metadata (NEW)
+        [MaxLength(64)]
+        public string? Sku { get; set; }
+
+        [Range(0, 1000000)]
+        public decimal CostPrice { get; set; } = 0m;   // per unit cost (BDT)
+
+        [Range(0, 100000)]
+        public int ReorderPoint { get; set; } = 5;     // threshold for "Low"
+
+        public int Reserved { get; set; } = 0;         // units committed to orders/carts
+
+        public DateTime? LastRestockedAt { get; set; } // for aging/velocity later
+
+
     }
 }

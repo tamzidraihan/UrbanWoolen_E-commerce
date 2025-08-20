@@ -82,36 +82,51 @@ namespace UrbanWoolen.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return Page();
+
+            // ❗ 1) STOP EARLY if email is already registered
+            var existingByEmail = await _userManager.FindByEmailAsync(Input.Email);
+            var existingByName = await _userManager.FindByNameAsync(Input.Email); // in case you use Email as UserName
+            if (existingByEmail != null || existingByName != null)
             {
-                // Generate OTP
-                var otpCode = new Random().Next(100000, 999999).ToString();
-                var expiry = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["Email:OtpValidityMinutes"] ?? "2"));
-
-                // Save OTP to database
-                var otpRecord = new EmailOtpVerification
-                {
-                    Email = Input.Email,
-                    OtpCode = otpCode,
-                    ExpiryTime = expiry,
-                    IsVerified = false
-                };
-                _context.EmailOtpVerifications.Add(otpRecord);
-                await _context.SaveChangesAsync();
-
-                // Send OTP Email
-                await _emailSender.SendEmailAsync(Input.Email, "UrbanWoolen - Verify Your Email",
-                    $"Your verification OTP is <strong>{otpCode}</strong>. It will expire in 2 minutes.");
-
-                // Store data in session
-                HttpContext.Session.SetString("otp_email", Input.Email);
-                HttpContext.Session.SetString("otp_password", Input.Password);
-
-                return RedirectToPage("VerifyOtp");
+                ModelState.AddModelError("Input.Email", "This email is already registered. Please log in or reset your password.");
+                return Page(); // ⟵ do NOT generate/send OTP; stay on Register
             }
 
-            return Page();
+            // 2) Generate OTP
+            var otpCode = new Random().Next(100000, 999999).ToString();
+            var minutes = int.TryParse(_configuration["Email:OtpValidityMinutes"], out var m) ? m : 10;
+            var expiry = DateTime.UtcNow.AddMinutes(minutes);
+
+            // 3) (Hygiene) Remove older unverified OTPs for this email
+            var olds = _context.EmailOtpVerifications.Where(x => x.Email == Input.Email && !x.IsVerified);
+            _context.EmailOtpVerifications.RemoveRange(olds);
+
+            // 4) Save OTP
+            var otpRecord = new EmailOtpVerification
+            {
+                Email = Input.Email,
+                OtpCode = otpCode,
+                ExpiryTime = expiry,
+                IsVerified = false
+            };
+            _context.EmailOtpVerifications.Add(otpRecord);
+            await _context.SaveChangesAsync();
+
+            // 5) Send OTP
+            await _emailSender.SendEmailAsync(
+                Input.Email,
+                "UrbanWoolen - Verify Your Email",
+                $"Your verification OTP is <strong>{otpCode}</strong>. It will expire in {minutes} minutes.");
+
+            // 6) Stash email + password in session for Verify step
+            HttpContext.Session.SetString("otp_email", Input.Email);
+            HttpContext.Session.SetString("otp_password", Input.Password);
+
+            return RedirectToPage("VerifyOtp");
         }
+
 
         private IdentityUser CreateUser()
         {

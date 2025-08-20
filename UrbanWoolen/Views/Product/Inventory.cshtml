@@ -1,52 +1,151 @@
-﻿@model List<UrbanWoolen.Models.Product>
+﻿@model UrbanWoolen.Models.ViewModels.InventoryIndexViewModel
+@using UrbanWoolen.Models
 @{
     ViewData["Title"] = "Inventory Overview";
+    Func<decimal, string> BDT = v => $"৳{v:0.00}";
+    var f = Model.Filter;
+    int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Math.Max(1, f.PageSize));
 }
 
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0"><i class="bi bi-box-seam me-2"></i> Inventory Dashboard</h4>
-            <a asp-action="Create" class="btn btn-outline-light btn-sm">
-                <i class="bi bi-plus-circle"></i> Add New Product
-            </a>
+        <div class="card-header bg-dark text-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h4 class="mb-0"><i class="bi bi-box-seam me-2"></i> Inventory</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Create" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-plus-circle"></i> Add Product
+                </a>
+                <a asp-action="ExportInventoryCsv" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+                </a>
+            </div>
         </div>
-        <div class="card-body table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price (৳)</th>
-                        <th>Stock</th>
-                        <th>Edit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr class="@(item.Stock <= 5 ? "table-danger" : "")">
-                            <td>
-                                <img src="@item.ImageUrl" alt="@item.Name" width="50" class="img-thumbnail" />
-                            </td>
-                            <td class="fw-semibold">@item.Name</td>
-                            <td>@item.Category</td>
-                            <td>@item.Price.ToString("0.00")</td>
-                            <td>
-                                <span class="badge bg-@(item.Stock <= 5 ? "danger" : "success")">
-                                    @item.Stock
-                                </span>
-                            </td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                            </td>
+
+        <div class="card-body">
+            <!-- Filters -->
+            <form method="get" class="row g-2 mb-3">
+                <div class="col-md-3">
+                    <input name="search" value="@f.Search" class="form-control" placeholder="Search name or SKU..." />
+                </div>
+                <div class="col-md-2">
+                    <select name="category" class="form-select">
+                        <option value="">All categories</option>
+                        @foreach (var c in Enum.GetValues<ProductCategory>())
+                        {
+                            <option value="@c" selected="@(f.Category == c)">@c</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="stockStatus" class="form-select">
+                        <option value="all" selected="@(f.StockStatus=="all")">All stock</option>
+                        <option value="in" selected="@(f.StockStatus=="in")">In stock</option>
+                        <option value="low" selected="@(f.StockStatus=="low")">Low (≤ ROP)</option>
+                        <option value="out" selected="@(f.StockStatus=="out")">Out of stock</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="sortBy" class="form-select">
+                        <option value="name" selected="@(f.SortBy=="name")">Sort by Name</option>
+                        <option value="stock" selected="@(f.SortBy=="stock")">Sort by Stock</option>
+                        <option value="value" selected="@(f.SortBy=="value")">Sort by Value</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <select name="pageSize" class="form-select">
+                        @foreach (var ps in new[] { 10, 20, 50, 100 })
+                        {
+                            <option value="@ps" selected="@(f.PageSize == ps)">@ps</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary"><i class="bi bi-funnel"></i> Apply</button>
+                </div>
+            </form>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Image</th>
+                            <th>Name / SKU</th>
+                            <th>Category</th>
+                            <th class="text-end">Price</th>
+                            <th class="text-end">Cost</th>
+                            <th class="text-end">Stock</th>
+                            <th class="text-end">Reserved</th>
+                            <th class="text-end">Available</th>
+                            <th class="text-end">Stock Value</th>
+                            <th style="width: 200px;">Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            var rowClass = item.IsOut ? "table-danger" : (item.IsLow ? "table-warning" : "");
+                            <tr class="@rowClass">
+                                <td><img src="@item.ImageUrl" alt="@item.Name" width="48" class="img-thumbnail" /></td>
+                                <td>
+                                    <div class="fw-semibold">@item.Name</div>
+                                    <small class="text-muted">@item.Sku</small>
+                                </td>
+                                <td>@item.Category</td>
+                                <td class="text-end">@BDT(item.Price)</td>
+                                <td class="text-end">@BDT(item.CostPrice)</td>
+                                <td class="text-end">
+                                    <span class="badge bg-@(item.IsOut ? "danger" : item.IsLow ? "warning text-dark" : "success")">@item.Stock</span>
+                                </td>
+                                <td class="text-end">@item.Reserved</td>
+                                <td class="text-end">@item.Available</td>
+                                <td class="text-end">@BDT(item.StockValue)</td>
+                                <td class="d-flex gap-2">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <a asp-action="Adjust" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-plus-slash-minus"></i> Adjust
+                                    </a>
+                                    <a asp-action="Movements" asp-route-productId="@item.Id" class="btn btn-sm btn-outline-dark">
+                                        <i class="bi bi-clock-history"></i> History
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Items.Any())
+                        {
+                            <tr><td colspan="10" class="text-center text-muted py-4">No products match the filters.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-end">
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li class="page-item @(i == f.Page ? "active" : "")">
+                                <a class="page-link"
+                                   href="@Url.Action("Inventory", new { search = f.Search, category = f.Category, stockStatus = f.StockStatus, sortBy = f.SortBy, page = i, pageSize = f.PageSize })">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
         </div>
     </div>
+
+    @if (TempData["InvMsg"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            @TempData["InvMsg"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 </div>

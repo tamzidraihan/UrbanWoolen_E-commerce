@@ -31,17 +31,32 @@ namespace UrbanWoolen.Areas.Identity.Pages.Account
         [Required(ErrorMessage = "OTP code is required.")]
         public string OtpCode { get; set; }
 
-        // Email is managed manually — no binding!
-        private string otpEmail;
+        public void OnGet()
+        {
+            // If session expired, bounce back to Register
+            var email = HttpContext.Session.GetString("otp_email");
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                TempData["Error"] = "Your verification session expired. Please register again.";
+                Response.Redirect("./Register");
+            }
+        }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Always fetch email from session
-            otpEmail = HttpContext.Session.GetString("otp_email");
-
+            var otpEmail = HttpContext.Session.GetString("otp_email");
             if (!ModelState.IsValid || string.IsNullOrWhiteSpace(otpEmail))
             {
                 ModelState.AddModelError(string.Empty, "Invalid request.");
+                return Page();
+            }
+
+            // ? Defensive: if someone reaches here but the email got registered meanwhile
+            var exists = await _userManager.FindByEmailAsync(otpEmail)
+                      ?? await _userManager.FindByNameAsync(otpEmail);
+            if (exists != null)
+            {
+                ModelState.AddModelError(string.Empty, "This email is already registered. Please log in.");
                 return Page();
             }
 
@@ -57,8 +72,10 @@ namespace UrbanWoolen.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            // Mark OTP as verified
+            // Mark OTP as verified + cleanup other codes for this email
             record.IsVerified = true;
+            var others = _context.EmailOtpVerifications.Where(x => x.Email == otpEmail && x.Id != record.Id);
+            _context.EmailOtpVerifications.RemoveRange(others);
             await _context.SaveChangesAsync();
 
             // Retrieve the stored password
@@ -69,7 +86,7 @@ namespace UrbanWoolen.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            // Create the user
+            // Create the user now
             var user = new IdentityUser
             {
                 UserName = otpEmail,
@@ -78,20 +95,17 @@ namespace UrbanWoolen.Areas.Identity.Pages.Account
             };
 
             var result = await _userManager.CreateAsync(user, password);
-
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToPage("/Index");
+                foreach (var e in result.Errors)
+                    ModelState.AddModelError(string.Empty, e.Description);
+                return Page();
             }
 
-            // Add any identity errors
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
-            return Page();
+            // Sign in and clear sensitive session values
+            HttpContext.Session.Remove("otp_password");
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return RedirectToPage("/Index");
         }
     }
 }

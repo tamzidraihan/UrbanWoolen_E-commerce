@@ -1,0 +1,16 @@
+﻿@model UrbanWoolen.Models.Discount
+@{
+    ViewData["Title"] = "Delete Discount";
+}
+<h2>Delete Discount</h2>
+<hr />
+<div class="alert alert-warning">
+    Are you sure you want to delete the discount for <strong>@Model.Product?.Name</strong>?
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

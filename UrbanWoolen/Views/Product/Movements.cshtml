@@ -1,0 +1,36 @@
+﻿@model IEnumerable<UrbanWoolen.Models.InventoryTransaction>
+@{
+    ViewData["Title"] = "Stock Movements";
+    var p = ViewBag.Product as UrbanWoolen.Models.Product;
+}
+<div class="container mt-4">
+    <h4>History — @p?.Name</h4>
+    <div class="card">
+        <div class="card-body table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr><th>Date</th><th>Change</th><th>Reason</th><th>Reference</th><th>By</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        <tr>
+                            <td>@t.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
+                            <td class="@(t.Change >= 0 ? "text-success" : "text-danger")">
+                                @(t.Change >= 0 ? "+" : "")@t.Change
+                            </td>
+                            <td>@t.Reason</td>
+                            <td>@t.Reference</td>
+                            <td>@t.PerformedByUserId</td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="5" class="text-center text-muted">No movements yet.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <a asp-action="Inventory" class="btn btn-secondary mt-3">Back</a>
+</div>

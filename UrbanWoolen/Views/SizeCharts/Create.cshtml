@@ -1,0 +1,60 @@
+﻿@model UrbanWoolen.Models.SizeChart
+@{
+    ViewData["Title"] = "Create Size Chart";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5>Create Size Chart</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Category" class="form-label"></label>
+                    <select asp-for="Category" class="form-select"
+                            asp-items="Html.GetEnumSelectList<UrbanWoolen.Models.ProductCategory>()">
+                        <option value="">-- Select Category --</option>
+                    </select>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Region" class="form-label"></label>
+                        <input asp-for="Region" class="form-control" placeholder="BD/US/UK/EU" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Unit" class="form-label"></label>
+                        <select asp-for="Unit" class="form-select">
+                            <option value="cm">cm</option>
+                            <option value="in">in</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="ChartType" class="form-label"></label>
+                        <select asp-for="ChartType" class="form-select"
+                                asp-items="Html.GetEnumSelectList<UrbanWoolen.Models.ChartType>()">
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a asp-action="Index" class="btn btn-secondary">Back</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

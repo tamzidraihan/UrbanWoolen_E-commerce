@@ -1,40 +1,218 @@
 ﻿@model UrbanWoolen.Models.ViewModels.DashboardViewModel
 @{
     ViewData["Title"] = "Admin Dashboard";
+    // Simple BDT formatter
+    Func<decimal, string> BDT = v => $"৳{v:0.00}";
 }
 
-<h2>Admin Dashboard</h2>
-<div class="row mt-4">
-    <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Total Orders</h5>
-                <p class="card-text display-6">@Model.TotalOrders</p>
+<div class="container-fluid py-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <!-- KPI Cards Row 1 -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="text-muted">Total Sales</div>
+                    <div class="fs-3 fw-bold">@BDT(Model.TotalSales)</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="text-muted">Total Orders</div>
+                    <div class="fs-3 fw-bold">@Model.TotalOrders</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="text-muted">AOV (All Time)</div>
+                    <div class="fs-3 fw-bold">@BDT(Model.AovAllTime)</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="text-muted">Units Sold</div>
+                    <div class="fs-3 fw-bold">@Model.UnitsSoldAllTime</div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Total Sales</h5>
-                <p class="card-text display-6">@Model.TotalSales.ToString("0.00") ৳</p>
+
+    <!-- KPI Cards Row 2 -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="text-muted">Sales (Last 30d)</div>
+                    <div class="fs-3 fw-bold text-success">@BDT(Model.Sales30d)</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="text-muted">Orders (Last 30d)</div>
+                    <div class="fs-3 fw-bold text-success">@Model.Orders30d</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="text-muted">Active Customers (30d)</div>
+                    <div class="fs-3 fw-bold">@Model.ActiveCustomers30d</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="text-muted">Repeat Purchase Rate (90d)</div>
+                    <div class="fs-3 fw-bold">@(Model.RepeatPurchaseRate90d.ToString("P1"))</div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-info mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Total Products</h5>
-                <p class="card-text display-6">@Model.TotalProducts</p>
+
+    <!-- Charts -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">Revenue (last 30 days)</div>
+                <div class="card-body">
+                    <canvas id="revChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">Orders (last 30 days)</div>
+                <div class="card-body">
+                    <canvas id="ordersChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-danger mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Low Stock Items</h5>
-                <p class="card-text display-6">@Model.LowStockCount</p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">Top Products (30d)</div>
+                <div class="card-body">
+                    <canvas id="topProductsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">Category Mix (30d)</div>
+                <div class="card-body">
+                    <canvas id="categoryPie"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables -->
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">Low Stock (≤5)</div>
+                <div class="card-body p-0">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr><th>Product</th><th class="text-end">Stock</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.LowStockItems)
+                            {
+                                <tr>
+                                    <td>@r.Name</td>
+                                    <td class="text-end">@r.Stock</td>
+                                </tr>
+                            }
+                            @if (!Model.LowStockItems.Any())
+                            {
+                                <tr><td colspan="2" class="text-center text-muted py-3">No low stock items 🎉</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">Recent Orders</div>
+                <div class="card-body p-0">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr><th>ID</th><th>Date</th><th>Customer</th><th>Status</th><th class="text-end">Total</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var o in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td>@o.OrderId</td>
+                                    <td>@o.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
+                                    <td>@o.CustomerEmail</td>
+                                    <td>@o.Status</td>
+                                    <td class="text-end">@BDT(o.Total)</td>
+                                </tr>
+                            }
+                            @if (!Model.RecentOrders.Any())
+                            {
+                                <tr><td colspan="5" class="text-center text-muted py-3">No recent orders</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DaysLabels));
+        const revenue = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RevenueByDay));
+        const orders = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrdersByDay));
+
+        new Chart(document.getElementById('revChart'), {
+            type: 'line',
+            data: { labels, datasets: [{ label: 'Revenue (৳)', data: revenue, tension: 0.3 }] },
+            options: { plugins: { legend: { display: true } }, scales: { y: { beginAtZero: true } } }
+        });
+
+        new Chart(document.getElementById('ordersChart'), {
+            type: 'bar',
+            data: { labels, datasets: [{ label: 'Orders', data: orders }] },
+            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, precision: 0 } } }
+        });
+
+        const topNames = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopProducts30d.Select(x => x.Name)));
+        const topRevenue = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopProducts30d.Select(x => x.Revenue)));
+
+        new Chart(document.getElementById('topProductsChart'), {
+            type: 'bar',
+            data: { labels: topNames, datasets: [{ label: 'Revenue (৳)', data: topRevenue }] },
+            options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+        });
+
+        const catLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryMix30d.Select(x => x.Category)));
+        const catRevenue = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryMix30d.Select(x => x.Revenue)));
+
+        new Chart(document.getElementById('categoryPie'), {
+            type: 'pie',
+            data: { labels: catLabels, datasets: [{ data: catRevenue }] },
+            options: { plugins: { legend: { position: 'bottom' } } }
+        });
+    </script>
+}

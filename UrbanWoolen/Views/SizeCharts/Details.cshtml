@@ -1,0 +1,69 @@
+﻿@model UrbanWoolen.Models.SizeChart
+@{
+    ViewData["Title"] = "Size Chart Details";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>@Model.Title</h3>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3"><strong>Category:</strong> @Model.Category</div>
+                <div class="col-md-3"><strong>Region:</strong> @Model.Region</div>
+                <div class="col-md-3"><strong>Unit:</strong> @Model.Unit</div>
+                <div class="col-md-3"><strong>Type:</strong> @Model.ChartType</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Rows</h5>
+        <a asp-controller="SizeChartItems" asp-action="Create" asp-route-chartId="@Model.Id" class="btn btn-sm btn-success">
+            <i class="bi bi-plus-circle"></i> Add Row
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Size</th>
+                        <th>Chest</th>
+                        <th>Waist</th>
+                        <th>Length</th>
+                        <th>Hip</th>
+                        <th>Inseam</th>
+                        <th>FootLength</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.Items.OrderBy(i => i.Id))
+                    {
+                        <tr>
+                            <td class="fw-semibold">@r.Size</td>
+                            <td>@r.Chest</td>
+                            <td>@r.Waist</td>
+                            <td>@r.Length</td>
+                            <td>@r.Hip</td>
+                            <td>@r.Inseam</td>
+                            <td>@r.FootLength</td>
+                            <td class="text-end">
+                                <a asp-controller="SizeChartItems" asp-action="Edit" asp-route-id="@r.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a asp-controller="SizeChartItems" asp-action="Delete" asp-route-id="@r.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

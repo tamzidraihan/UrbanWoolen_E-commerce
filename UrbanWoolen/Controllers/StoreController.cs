@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UrbanWoolen.Data;
+using UrbanWoolen.Models;
+using UrbanWoolen.Models.ViewModels;
 
 namespace UrbanWoolen.Controllers
 {
@@ -13,6 +17,7 @@ namespace UrbanWoolen.Controllers
             _context = context;
         }
 
+        // /Store
         public async Task<IActionResult> Index(string category, string search, decimal? minPrice, decimal? maxPrice)
         {
             var products = await _context.Products.ToListAsync();
@@ -49,19 +54,47 @@ namespace UrbanWoolen.Controllers
             return View(products);
         }
 
-
-
-        public async Task<IActionResult> Details(int id)
+        // /Store/Details/5?region=BD&unit=cm
+        public async Task<IActionResult> Details(int id, string? region = null, string? unit = "cm")
         {
+            // Keep: product + reviews
             var product = await _context.Products
                 .Include(p => p.Reviews)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (product == null)
-                return NotFound();
+            if (product == null) return NotFound();
 
-            return View(product);
+            // Find available regions for this product's category
+            var regions = await _context.SizeCharts
+                .Where(c => c.Category == product.Category)
+                .Select(c => c.Region)
+                .Distinct()
+                .OrderBy(r => r)
+                .ToListAsync();
+
+            // Pick selected region: querystring > BD (if available) > first
+            var selectedRegion = string.IsNullOrWhiteSpace(region)
+                ? (regions.Contains("BD") ? "BD" : regions.FirstOrDefault())
+                : region;
+
+            UrbanWoolen.Models.SizeChart? chart = null;
+            if (!string.IsNullOrWhiteSpace(selectedRegion))
+            {
+                chart = await _context.SizeCharts
+                    .Include(c => c.Items)
+                    .Where(c => c.Category == product.Category && c.Region == selectedRegion)
+                    .OrderBy(c => c.Id)
+                    .FirstOrDefaultAsync();
+            }
+
+            // Pass extras via ViewBag so the view can stay @model Product
+            ViewBag.AvailableRegions = regions;                    // List<string>
+            ViewBag.SelectedRegion = selectedRegion;               // string?
+            ViewBag.SelectedUnit = unit == "in" ? "in" : "cm";     // "cm" | "in"
+            ViewBag.SizeChart = chart;                             // SizeChart or null
+
+            return View(product);  // IMPORTANT: still returning Product as the model
         }
-    }
 
+    }
 }
