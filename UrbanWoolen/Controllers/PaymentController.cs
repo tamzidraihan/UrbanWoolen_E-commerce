@@ -16,19 +16,22 @@ namespace UrbanWoolen.Controllers
         public IActionResult Success()
         {
             TempData["CartMessage"] = "Payment Successful!";
-            return RedirectToAction("MyOrders", "Order");
+            //return RedirectToAction("MyOrders", "Order");
+            return View("Success");
         }
 
         public IActionResult Fail()
         {
             TempData["CartMessage"] = "Payment Failed. Please try again.";
-            return RedirectToAction("Index", "Cart");
+            return View("Fail");
+            //return RedirectToAction("Index", "Cart");
         }
 
         public IActionResult Cancel()
         {
             TempData["CartMessage"] = "Payment Canceled.";
-            return RedirectToAction("Index", "Cart");
+            //return RedirectToAction("Index", "Cart");
+            return View("Cancel");
         }
 
         [HttpPost]

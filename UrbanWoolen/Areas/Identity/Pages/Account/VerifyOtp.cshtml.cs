@@ -13,6 +13,11 @@ namespace UrbanWoolen.Areas.Identity.Pages.Account
 {
     public class VerifyOtpModel : PageModel
     {
+        private const string RegisterEmailKey = "otp_email";
+        private const string RegisterPasswordKey = "otp_password";
+        private const string ResetEmailKey = "reset_email";
+        private const string ResetVerifiedKey = "reset_verified";
+
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
@@ -27,85 +32,139 @@ namespace UrbanWoolen.Areas.Identity.Pages.Account
             _signInManager = signInManager;
         }
 
+        // Decide flow by query (?mode=reset) or by session presence
+        [BindProperty(SupportsGet = true)]
+        public string? Mode { get; set; } = "register";
+
         [BindProperty]
         [Required(ErrorMessage = "OTP code is required.")]
         public string OtpCode { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            // If session expired, bounce back to Register
-            var email = HttpContext.Session.GetString("otp_email");
+            var isReset = IsResetFlow();
+            var email = isReset
+                ? HttpContext.Session.GetString(ResetEmailKey)
+                : HttpContext.Session.GetString(RegisterEmailKey);
+
             if (string.IsNullOrWhiteSpace(email))
             {
-                TempData["Error"] = "Your verification session expired. Please register again.";
-                Response.Redirect("./Register");
+                TempData["Error"] = isReset
+                    ? "Your reset session expired. Please start again."
+                    : "Your verification session expired. Please register again.";
+
+                return isReset ? RedirectToPage("./ForgotPassword") : RedirectToPage("./Register");
             }
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var otpEmail = HttpContext.Session.GetString("otp_email");
-            if (!ModelState.IsValid || string.IsNullOrWhiteSpace(otpEmail))
+            var isReset = IsResetFlow();
+            var email = isReset
+                ? HttpContext.Session.GetString(ResetEmailKey)
+                : HttpContext.Session.GetString(RegisterEmailKey);
+
+            if (!ModelState.IsValid || string.IsNullOrWhiteSpace(email))
             {
                 ModelState.AddModelError(string.Empty, "Invalid request.");
                 return Page();
             }
 
-            // ? Defensive: if someone reaches here but the email got registered meanwhile
-            var exists = await _userManager.FindByEmailAsync(otpEmail)
-                      ?? await _userManager.FindByNameAsync(otpEmail);
-            if (exists != null)
+            if (isReset)
             {
-                ModelState.AddModelError(string.Empty, "This email is already registered. Please log in.");
-                return Page();
+                // ------------ RESET FLOW ------------
+                var user = await _userManager.FindByEmailAsync(email)
+                           ?? await _userManager.FindByNameAsync(email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "No account found with this email.");
+                    return Page();
+                }
+
+                var record = _context.EmailOtpVerifications
+                    .Where(e => e.Email == email && !e.IsVerified)
+                    .OrderByDescending(e => e.ExpiryTime)
+                    .FirstOrDefault();
+
+                if (record == null || record.ExpiryTime < DateTime.UtcNow || record.OtpCode != OtpCode)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid or expired OTP.");
+                    return Page();
+                }
+
+                record.IsVerified = true;
+
+                // Clean up other codes for this email
+                var others = _context.EmailOtpVerifications.Where(x => x.Email == email && x.Id != record.Id);
+                _context.EmailOtpVerifications.RemoveRange(others);
+                await _context.SaveChangesAsync();
+
+                HttpContext.Session.SetString(ResetVerifiedKey, "true");
+                return RedirectToPage("./ResetPassword");
             }
-
-            // Get the latest unverified OTP for this email
-            var record = _context.EmailOtpVerifications
-                .Where(e => e.Email == otpEmail && !e.IsVerified)
-                .OrderByDescending(e => e.ExpiryTime)
-                .FirstOrDefault();
-
-            if (record == null || record.ExpiryTime < DateTime.UtcNow || record.OtpCode != OtpCode)
+            else
             {
-                ModelState.AddModelError(string.Empty, "Invalid or expired OTP.");
-                return Page();
+                // --------- REGISTRATION FLOW (your original logic) ---------
+                var exists = await _userManager.FindByEmailAsync(email)
+                            ?? await _userManager.FindByNameAsync(email);
+                if (exists != null)
+                {
+                    ModelState.AddModelError(string.Empty, "This email is already registered. Please log in.");
+                    return Page();
+                }
+
+                var record = _context.EmailOtpVerifications
+                    .Where(e => e.Email == email && !e.IsVerified)
+                    .OrderByDescending(e => e.ExpiryTime)
+                    .FirstOrDefault();
+
+                if (record == null || record.ExpiryTime < DateTime.UtcNow || record.OtpCode != OtpCode)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid or expired OTP.");
+                    return Page();
+                }
+
+                record.IsVerified = true;
+                var others = _context.EmailOtpVerifications.Where(x => x.Email == email && x.Id != record.Id);
+                _context.EmailOtpVerifications.RemoveRange(others);
+                await _context.SaveChangesAsync();
+
+                var password = HttpContext.Session.GetString(RegisterPasswordKey);
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    ModelState.AddModelError(string.Empty, "Password session expired. Please try registering again.");
+                    return Page();
+                }
+
+                var user = new IdentityUser
+                {
+                    UserName = email,
+                    Email = email,
+                    EmailConfirmed = true
+                };
+
+                var result = await _userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                {
+                    foreach (var e in result.Errors)
+                        ModelState.AddModelError(string.Empty, e.Description);
+                    return Page();
+                }
+
+                HttpContext.Session.Remove(RegisterPasswordKey);
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToPage("/Index");
             }
+        }
 
-            // Mark OTP as verified + cleanup other codes for this email
-            record.IsVerified = true;
-            var others = _context.EmailOtpVerifications.Where(x => x.Email == otpEmail && x.Id != record.Id);
-            _context.EmailOtpVerifications.RemoveRange(others);
-            await _context.SaveChangesAsync();
+        private bool IsResetFlow()
+        {
+            if (string.Equals(Mode, "reset", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(Mode, "register", StringComparison.OrdinalIgnoreCase)) return false;
 
-            // Retrieve the stored password
-            var password = HttpContext.Session.GetString("otp_password");
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                ModelState.AddModelError(string.Empty, "Password session expired. Please try registering again.");
-                return Page();
-            }
-
-            // Create the user now
-            var user = new IdentityUser
-            {
-                UserName = otpEmail,
-                Email = otpEmail,
-                EmailConfirmed = true
-            };
-
-            var result = await _userManager.CreateAsync(user, password);
-            if (!result.Succeeded)
-            {
-                foreach (var e in result.Errors)
-                    ModelState.AddModelError(string.Empty, e.Description);
-                return Page();
-            }
-
-            // Sign in and clear sensitive session values
-            HttpContext.Session.Remove("otp_password");
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToPage("/Index");
+            // Fallback: presence of reset_email session
+            return !string.IsNullOrEmpty(HttpContext.Session.GetString(ResetEmailKey));
         }
     }
 }

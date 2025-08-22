@@ -1,10 +1,13 @@
 ﻿@page
 @model UrbanWoolen.Areas.Identity.Pages.Account.VerifyOtpModel
 @{
-    ViewData["Title"] = "Verify OTP";
+    var title = string.Equals(Model.Mode, "reset", StringComparison.OrdinalIgnoreCase)
+        ? "Verify Reset Code"
+        : "Verify Your Email";
+    ViewData["Title"] = title;
 }
 
-<h2 class="mb-4">Verify Your Email</h2>
+<h2 class="mb-4">@title</h2>
 
 <form method="post">
     <div asp-validation-summary="All" class="text-danger"></div>

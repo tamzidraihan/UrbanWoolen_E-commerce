@@ -54,7 +54,7 @@
                                     <td>@item.ProductName</td>
                                     <td class="text-center">@item.Quantity</td>
                                     <td>@item.Price.ToString("0.00") ৳</td>
-                                    <td class="fw-semibold text-success">@(item.Price * item.Quantity).ToString("0.00") ৳</td>
+                                    <td class="fw-semibold text-success">@((item.Price * item.Quantity).ToString("0.00")) ৳</td>
                                 </tr>
                             }
                         </tbody>
