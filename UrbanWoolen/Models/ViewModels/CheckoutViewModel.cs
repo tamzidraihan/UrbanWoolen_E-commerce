@@ -6,17 +6,16 @@ namespace UrbanWoolen.Models.ViewModels
     public class CheckoutViewModel
     {
         
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string AddressLine1 { get; set; } = string.Empty;
 
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string AddressLine1 { get; set; }
-
-        public string AddressLine2 { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public string PostalCode { get; set; }
-        public string Country { get; set; }
+        public string AddressLine2 { get; set; } 
+        public string City { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;   
+        public string PostalCode { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
 
         // Cart Summary (display only)
         [BindNever]
